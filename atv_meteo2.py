@@ -48,6 +48,10 @@ skew.shade_cape(pressao, T, prof,color='c', label='CAPE')
 #Adicionando área de CINE
 skew.shade_cin(pressao, T, prof, Td,color='r', label='CINE')
 
+# adicionando o NCC e a Tc
+ccl_pressure,ccl_temperature,Tc=mpcalc.ccl(pressao,T,Td, which='top')
+skew.plot(pressao[0],Tc, 'o', markerfacecolor='grey', label='Tc')
+print(Tc)
 # Definindo rótulos e legenda
 plt.xlabel('Temperatura (°C)',fontweight='bold',fontsize=10)
 plt.ylabel('Pressão (hPa)',fontweight='bold',fontsize=10)
