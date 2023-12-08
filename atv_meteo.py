@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 import metpy.calc as mpcalc
 from metpy.cbook import get_test_data
 from metpy.plots import add_metpy_logo, SkewT
@@ -15,17 +14,13 @@ print(df)
 #excluindo colunas sem dados de T e Td (-999)
 #df = df.dropna(subset=('Pres[hPa]', 'Geop[m]', 'Temp[oC]', 'Td[oC]','Dir[o]','Vel[m/s]'
                        #), how='all').reset_index(drop=True)
-df.drop(df[df['Temp[oC]'] == -999].index, inplace = True)
-df.drop(df[df['Td[oC]'] == -999].index, inplace = True)
+df = df[(df['Temp[oC]'] != -999) & (df['Td[oC]'] != -999)]
 
-#definindo as variaveis separadamente
-pressao=df['Pres[hPa]']
-geop=df['Geop[m]']
-T=df['Temp[oC]']
-Td=df['Td[oC]']
-Dir=df['Dir[o]']
-Vel=df['Vel[m/s]']
-#u,v=mpcalc.wind_components(Vel,Dir)
+#definindo as variaveis separadamente e adicionando as unidades
+pressao = df['Pres[hPa]'].values * units.hPa
+T = df['Temp[oC]'].values * units.degC
+Td = df['Td[oC]'].values * units.degC
+
 
 #plotando 
 skew=SkewT()
@@ -41,20 +36,15 @@ skew.plot_mixing_lines()
 skew.ax.set_ylim(1000, 100)
 
 #adicionando ncl
-lcl_pressure, lcl_temperature = mpcalc.lcl(pressao[0]*units.mbar, T[0]*units.degC, Td[0]*units.degC)
+lcl_pressure, lcl_temperature = mpcalc.lcl(pressao[0], T[0], Td[0])
 skew.plot(lcl_pressure, lcl_temperature, 'ko', markerfacecolor='black')
-plt.show()
-exit()
 # Calculate full parcel profile and add to plot as black line
-prof = mpcalc.parcel_profile(pressao*units.mbar, T*units.degC, Td*units.degC)
+prof = mpcalc.parcel_profile(pressao, T, Td)
 skew.plot(pressao*units.mbar, prof*units.degC, 'k', linewidth=2, label='SB PARCEL PATH')
-plt.show()
-exit()
 
 # Shade areas of CAPE and CIN
 skew.shade_cin(pressao, T, prof, Td, alpha=0.2, label='SBCIN')
 skew.shade_cape(pressao, T, prof, alpha=0.2, label='SBCAPE')
-plt.legend()
 plt.show()
 
 #fonte =https://unidata.github.io/MetPy/latest/examples/plots/Simple_Sounding.html#sphx-glr-examples-plots-simple-sounding-py

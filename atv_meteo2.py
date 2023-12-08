@@ -49,9 +49,28 @@ skew.shade_cape(pressao, T, prof,color='c', label='CAPE')
 skew.shade_cin(pressao, T, prof, Td,color='r', label='CINE')
 
 # Definindo rótulos e legenda
-plt.xlabel('Temperatura (°C)')
-plt.ylabel('Pressão (hPa)')
+plt.xlabel('Temperatura (°C)',fontweight='bold',fontsize=10)
+plt.ylabel('Pressão (hPa)',fontweight='bold',fontsize=10)
 plt.legend()
 
 # Mostrando o diagrama de Skew-T
+plt.show()
+
+#calculando theta, theta_e e theta_es
+theta=mpcalc.potential_temperature(pressao,T).to('degC')
+theta_e = mpcalc.equivalent_potential_temperature(pressao, T, Td).to('degC')
+theta_es=mpcalc.saturation_equivalent_potential_temperature(pressao, T).to('degC')
+
+#plotando esses perfis
+plt.figure(figsize=(8, 8))
+plt.plot(theta_e,pressao,label=r'$\theta_e$')
+plt.plot(theta,pressao,label=r'$\theta$')
+plt.plot(theta_es,pressao,label=r'$\theta_{es}$')
+plt.ylim(200, 1000)
+plt.xlim(0,120)
+plt.gca().invert_yaxis()
+plt.legend()
+plt.xlabel('Temperatura (°C)',fontweight='bold',fontsize=10)
+plt.ylabel('Pressão (hPa)',fontweight='bold',fontsize=10)
+#plt.title('Equivalent Potential Temperature (Kelvin)')
 plt.show()
